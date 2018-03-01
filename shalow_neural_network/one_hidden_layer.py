@@ -4,9 +4,6 @@ import numpy as np
 train, train_label, test, test_label = get_data()
 
 
-# forward propagation
-
-
 def sg(X):
     return 1 / (1 + np.exp(-X))
 
@@ -16,19 +13,19 @@ def drelu(X):
 
 
 if __name__ == "__main__":
-    rate = 0.01
+    rate = 0.015
     h = int(input("Please input the number of neurons in the first layer!"))
-    np.random.seed(1)
+    np.random.seed(5)
     w1 = np.random.random((h, 3))*0.01
     b1 = np.random.random((h, 1))
     w2 = np.random.random((1, h))*0.01
     b2 = 0
-    for i in range(10000):
+    for i in range(100000):
         z1 = np.dot(w1, train) + b1
         a1 = np.maximum(z1, 0)
         z2 = np.dot(w2, a1) + b2
         a2 = sg(z2)
-        print(-np.dot(train_label, np.log(a2).T)-np.dot(1-train_label, np.log(1-a2).T))
+        loss = -np.dot(train_label, np.log(a2).T)-np.dot(1-train_label, np.log(1-a2).T)
         dz2 = a2 - train_label
         dw2 = np.dot(dz2, a1.T) / 524
         db2 = np.sum(dz2, axis=1, keepdims=True)

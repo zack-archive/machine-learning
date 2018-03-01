@@ -13,8 +13,8 @@ def get_data():
         for row in reader:
             train.append(row[0:3])  # 取得前三列（features）
             train_label.append([row[3]])  # labels
-        train = np.array(train, float).T
-        train_label = np.array(train_label, float).T
+        train = np.array(train, np.float64).T
+        train_label = np.array(train_label, np.float64).T
     with open(test_csv) as file:
         reader = csv.reader(file)
         test = []
@@ -23,12 +23,12 @@ def get_data():
         for row in reader:
             test.append(row[0:3])
             test_label.append(row[3])
-        test = np.array(test, float).T
-        test_label = np.array(test_label, float).T
+        test = np.array(test, np.float64).T
+        test_label = np.array(test_label, np.float64).T
     assert(train.shape == (3, 524))
     assert(test.shape == (3, 175))
+    # return feature_scaling(train), train_label, feature_scaling(test), test_label
     return train, train_label, test, test_label
-
 
 def feature_scaling(m):  # 把数据进行feature_scaling之后，准确率下降，未知原因
     mean = np.sum(m, axis=1, keepdims=True)/(m.shape[1])

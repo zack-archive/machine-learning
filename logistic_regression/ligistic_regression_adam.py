@@ -9,10 +9,13 @@ train, train_label, test, test_label = get_data()
 np.random.seed(1)
 w = np.random.random((3, 1))
 b = 0.0
-irate = 0.3  # 这是learning rate的初始值
-decay_rate = 0.99989
+rate = 0.3  # 这是learning rate
+beta1 = 0.9
+beta2 = 0.999
+epsilon = 0.00000001
+vdw = 0.0; sdw = 0.0; vdb = 0.0; sdb = 0.0
 start = time.clock()
-for i in range(1, 30000):  # 在使用了learning rate decay 之后，学习速率变大了约8倍
+for i in range(1, 70000):
     # forward propagation
     z = np.dot(w.T, train) + b
     a = 1 / (1 + np.exp(-z))
@@ -23,9 +26,17 @@ for i in range(1, 30000):  # 在使用了learning rate decay 之后，学习速�
     dz = a - train_label
     db = np.sum(dz) / 524
     dw = np.dot(train, dz.T) / 524
-    rate = irate*(np.power(decay_rate, i))
-    w = w - rate*dw
-    b = b - rate*db
+    vdw = beta1*vdw + (1-beta1)*dw
+    vdb = beta1*vdb + (1-beta1)*db
+    # Adam Optimization Algorithm
+    sdw = beta2*sdw + (1-beta2)*np.square(dw)
+    sdb = beta2*sdb + (1-beta2)*np.square(db)
+    vdw = vdw/(1-np.power(beta1, i))
+    vdb = vdb/(1-np.power(beta1, i))
+    sdw = sdw/(1-np.power(beta2, i))
+    sdb = sdb/(1-np.power(beta2, i))
+    w = w - rate*vdw/(np.power(sdw, 0.5) + epsilon)
+    b = b - rate*vdb/(np.power(sdb, 0.5) + epsilon)
 print(w, b)
 z_test = np.dot(w.T, test) + b
 a_test = 1 / (1 + np.exp(-z_test))  # issue: 会产生warning： overflow in exp, 之前的也有
